@@ -12,6 +12,7 @@ import kotlinx.coroutines.*
 
 class MainActivity : AppCompatActivity() {
 
+    // API から取得するデータセットを想定。
     private val dataSet = mutableListOf<String>()
 
     private var nowLoading = false
@@ -41,6 +42,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private suspend fun fetch(index: Int): List<String> {
+        // API 問い合わせの待ち時間を仮想的に作る。
         handler.post { progressBar.visibility = View.VISIBLE }
         delay(2000)
         handler.post { progressBar.visibility = View.INVISIBLE }
@@ -57,7 +59,9 @@ class MainActivity : AppCompatActivity() {
             fetch(index)
         }
 
+        // 取得したデータを画面に反映。
         handler.post { myAdapter.add(fetchedData) }
+        // 問い合わせが完了したら false に戻す。
         nowLoading = false
     }
 
@@ -65,9 +69,12 @@ class MainActivity : AppCompatActivity() {
         override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
             super.onScrolled(recyclerView, dx, dy)
 
-            val totalCount = recyclerView.adapter?.itemCount ?: 0
+            // アダプターが保持しているアイテムの合計
+            val totalCount = myAdapter.itemCount
+            // 画面に表示されているアイテム数
             val childCount = recyclerView.childCount
             val manager = recyclerView.layoutManager as LinearLayoutManager
+            // 画面に表示されている一番上のアイテムの位置
             val firstPosition = manager.findFirstVisibleItemPosition()
 
             // 何度もリクエストしないようにロード中は何もしない。
@@ -75,7 +82,9 @@ class MainActivity : AppCompatActivity() {
                 return
             }
 
+            // 以下の条件に当てはまれば一番下までスクロールされたと判断できる。
             if (totalCount == childCount + firstPosition) {
+                // API 問い合わせ中は true となる。
                 nowLoading = true
                 GlobalScope.launch {
                     fetchAndUpdate(myAdapter.itemCount)
