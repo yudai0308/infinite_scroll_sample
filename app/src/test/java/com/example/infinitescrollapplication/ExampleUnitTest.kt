@@ -1,4 +1,4 @@
-package com.example.infinitscrollapplication
+package com.example.infinitescrollapplication
 
 import org.junit.Test
 
