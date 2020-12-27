@@ -48,7 +48,7 @@ class MainActivity : AppCompatActivity() {
     private suspend fun fetch(index: Int): List<String> {
         // API 問い合わせの待ち時間を仮想的に作る。
         handler.post { progressBar.visibility = View.VISIBLE }
-        delay(2000)
+        delay(3000)
         handler.post { progressBar.visibility = View.INVISIBLE }
 
         return when (index) {
