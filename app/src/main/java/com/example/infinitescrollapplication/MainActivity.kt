@@ -12,7 +12,7 @@ import kotlinx.coroutines.*
 
 class MainActivity : AppCompatActivity() {
 
-    // API から取得するデータセットを想定。
+    // API から取得するデータセットを想定したプロパティ。
     private val dataSet = mutableListOf<String>()
 
     private var nowLoading = false
@@ -24,6 +24,7 @@ class MainActivity : AppCompatActivity() {
     private val progressBar by lazy { findViewById<ProgressBar>(R.id.progress_bar) }
 
     init {
+        // 仮想データセットを生成。
         for (i in 0..100) { dataSet.add("Number $i") }
     }
 
@@ -41,6 +42,9 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * API でリストデータを取得することを想定したメソッド。
+     */
     private suspend fun fetch(index: Int): List<String> {
         // API 問い合わせの待ち時間を仮想的に作る。
         handler.post { progressBar.visibility = View.VISIBLE }
@@ -54,6 +58,9 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * API でリストデータを取得して画面に反映することを想定したメソッド。
+     */
     private suspend fun fetchAndUpdate(index: Int) {
         val fetchedData = withContext(Dispatchers.Default) {
             fetch(index)
@@ -65,12 +72,15 @@ class MainActivity : AppCompatActivity() {
         nowLoading = false
     }
 
+    /**
+     * リストの下端までスクロールしたタイミングで発火するリスナー。
+     */
     inner class InfiniteScrollListener : RecyclerView.OnScrollListener() {
         override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
             super.onScrolled(recyclerView, dx, dy)
 
             // アダプターが保持しているアイテムの合計
-            val totalCount = myAdapter.itemCount
+            val itemCount = myAdapter.itemCount
             // 画面に表示されているアイテム数
             val childCount = recyclerView.childCount
             val manager = recyclerView.layoutManager as LinearLayoutManager
@@ -83,7 +93,7 @@ class MainActivity : AppCompatActivity() {
             }
 
             // 以下の条件に当てはまれば一番下までスクロールされたと判断できる。
-            if (totalCount == childCount + firstPosition) {
+            if (itemCount == childCount + firstPosition) {
                 // API 問い合わせ中は true となる。
                 nowLoading = true
                 GlobalScope.launch {

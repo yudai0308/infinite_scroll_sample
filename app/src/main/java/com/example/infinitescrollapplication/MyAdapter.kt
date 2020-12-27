@@ -21,10 +21,12 @@ class MyAdapter(private val listData: MutableList<String>) : RecyclerView.Adapte
         return listData.size
     }
 
+    /**
+     * リストデータを追加して画面に反映させるメソッド。
+     */
     fun add(listData: List<String>) {
         this.listData += listData
         notifyDataSetChanged()
-
     }
 
     class MyViewHolder(val textView: TextView): RecyclerView.ViewHolder(textView)
