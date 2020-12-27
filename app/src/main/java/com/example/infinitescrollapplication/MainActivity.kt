@@ -12,9 +12,14 @@ import kotlinx.coroutines.*
 
 class MainActivity : AppCompatActivity() {
 
-    // API から取得するデータセットを想定したプロパティ。
+    /**
+     * API から取得するデータセットを想定したプロパティ。
+     */
     private val dataSet = mutableListOf<String>()
 
+    /**
+     * API に問い合わせ中は true になる。
+     */
     private var nowLoading = false
 
     private lateinit var myAdapter: MyAdapter
@@ -25,7 +30,7 @@ class MainActivity : AppCompatActivity() {
 
     init {
         // 仮想データセットを生成。
-        for (i in 0..100) { dataSet.add("Number $i") }
+        for (i in 0..99) { dataSet.add("Number $i") }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -53,7 +58,7 @@ class MainActivity : AppCompatActivity() {
 
         return when (index) {
             in 0..90 -> dataSet.slice(index..index + 9)
-            in 91..99 -> dataSet.slice(index..99 - index)
+            in 91..99 -> dataSet.slice(index..99)
             else -> listOf()
         }
     }
@@ -67,7 +72,9 @@ class MainActivity : AppCompatActivity() {
         }
 
         // 取得したデータを画面に反映。
-        handler.post { myAdapter.add(fetchedData) }
+        if (fetchedData.isNotEmpty()) {
+            handler.post { myAdapter.add(fetchedData) }
+        }
         // 問い合わせが完了したら false に戻す。
         nowLoading = false
     }
